@@ -19,6 +19,6 @@ public class Metadata {
 
     //validates if we have the metadata we want
     public boolean validateMetaData() {
-
+        return true;
     }
 }
