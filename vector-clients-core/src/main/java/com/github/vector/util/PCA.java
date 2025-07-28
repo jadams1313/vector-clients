@@ -1,5 +1,8 @@
 package com.github.vector.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.FloatBuffer;
 
 public class PCA {
@@ -10,50 +13,62 @@ public class PCA {
     private int nFeatures;                  // Original feature dimensions
     private boolean fitted;                 // Training state
     private boolean whiten;                 // Whitening flag
-
+    private Logger logger;
     private PCA() {
         this.fitted = false;
+        this.logger = LoggerFactory.getLogger(PCA.class);
     }
 
     public static PCABuilder builder() {
         return new PCABuilder();
     }
 
-    public void fit(FloatBuffer data, int nSamples, int nFeatures) {
+    public void fit(FloatBuffer data, int nSamples, int nFeatures) throws IllegalArgumentException {
         if (this.nComponents <= 0 || this.nComponents > nFeatures) {
             throw new IllegalArgumentException("Invalid number of components");
         }
 
         this.nFeatures = nFeatures;
+        try {
+            allocateBuffers();
 
-        allocateBuffers();
+            computeMean(data, nSamples, nFeatures);
 
-        computeMean(data, nSamples, nFeatures);
+            FloatBuffer centeredData = centerData(data, nSamples, nFeatures);
 
-        FloatBuffer centeredData = centerData(data, nSamples, nFeatures);
+            performSVD(centeredData, nSamples, nFeatures);
+        } catch(Exception e) {
+            logger.atError();
+            logger.error(e.getMessage());
+        }
 
-        performSVD(centeredData, nSamples, nFeatures);
 
         this.fitted = true;
     }
 
-    public FloatBuffer transform(FloatBuffer data, int nSamples) {
+    public FloatBuffer transform(FloatBuffer data, int nSamples) throws IllegalStateException, IllegalArgumentException{
         if (!fitted) {
             throw new IllegalStateException("PCA must be fitted before transform");
         }
-
-        FloatBuffer transformed = FloatBuffer.allocate(nSamples * nComponents);
-
-        FloatBuffer centeredData = FloatBuffer.allocate(nSamples * nFeatures);
-        centerDataInPlace(data, centeredData, nSamples);
-
-        matrixMultiply(centeredData, components, transformed, nSamples, nFeatures, nComponents);
-
-        if (whiten) {
-            applyWhitening(transformed, nSamples);
+        if(nSamples > nFeatures) {
+            throw new IllegalStateException();
         }
+        try {
+            FloatBuffer transformed = FloatBuffer.allocate(nSamples * nComponents);
 
-        return transformed;
+            FloatBuffer centeredData = FloatBuffer.allocate(nSamples * nFeatures);
+            centerDataInPlace(data, centeredData, nSamples);
+
+            matrixMultiply(centeredData, components, transformed, nSamples, nFeatures, nComponents);
+            if (whiten) {
+                applyWhitening(transformed, nSamples);
+            }
+
+            return transformed;
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public FloatBuffer fitTransform(FloatBuffer data, int nSamples, int nFeatures) {
@@ -121,18 +136,24 @@ public class PCA {
         }
     }
 
-    private void performSVD(FloatBuffer centeredData, int nSamples, int nFeatures) {
-        FloatBuffer covariance = FloatBuffer.allocate(nFeatures * nFeatures);
-        computeCovariance(centeredData, covariance, nSamples, nFeatures);
+    private void performSVD(FloatBuffer centeredData, int nSamples, int nFeatures) throws IllegalArgumentException {
 
-        FloatBuffer eigenValues = FloatBuffer.allocate(nFeatures);
-        FloatBuffer eigenVectors = FloatBuffer.allocate(nFeatures * nFeatures);
+        try {
+            FloatBuffer covariance = FloatBuffer.allocate(nFeatures * nFeatures);
+            computeCovariance(centeredData, covariance, nSamples, nFeatures);
 
-        jacobiEigenDecomposition(covariance, eigenValues, eigenVectors, nFeatures);
+            FloatBuffer eigenValues = FloatBuffer.allocate(nFeatures);
+            FloatBuffer eigenVectors = FloatBuffer.allocate(nFeatures * nFeatures);
 
-        sortEigenPairs(eigenValues, eigenVectors, nFeatures);
+            jacobiEigenDecomposition(covariance, eigenValues, eigenVectors, nFeatures);
 
-        extractTopComponents(eigenValues, eigenVectors, nFeatures);
+            sortEigenPairs(eigenValues, eigenVectors, nFeatures);
+
+            extractTopComponents(eigenValues, eigenVectors, nFeatures);
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void computeCovariance(FloatBuffer centeredData, FloatBuffer covariance, int nSamples, int nFeatures) {

@@ -16,7 +16,7 @@ public interface Client {
 
     void openCollection(final String name);
 
-    void batchEmbedding(List<Embedding> embeddingList);
+    void batchEmbeddings(List<Embedding> embeddingList);
 
     void store(final Embedding embedding);
 

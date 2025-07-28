@@ -4,11 +4,13 @@ public class Embedding {
     private float[] embedding;
     private Metadata metadata;
     private String collection;
+    private Text text;
 
-    public Embedding(final float[] embedding, final Text context, final Metadata metadata, final String collection) {
+    public Embedding(final float[] embedding, final Text text, final Metadata metadata, final String collection) {
         this.embedding = embedding;
         this.metadata = metadata;
         this.collection = collection;
+        this.text = text;
     }
 
     public float[] getEmbedding() {
@@ -27,7 +29,6 @@ public class Embedding {
         this.metadata = metadata;
     }
 
-
     public String getCollection() {
         return collection;
     }
@@ -35,4 +36,8 @@ public class Embedding {
     public void setCollection(String collection) {
         this.collection = collection;
     }
+
+    public Text getText() {return this.text;}
+
+    public void setText(final Text text) {this.text=text;}
 }
