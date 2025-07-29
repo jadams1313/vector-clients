@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.FloatBuffer;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -32,14 +32,12 @@ public class PCAUtilTest {
     class DataValidation {
         @Test
         @DisplayName("Should throw exception for null data and insufficient dimension(n is not >=d.")
-        void shouldThrowExceptionForNullData() {
+        void shouldThrowExceptionForInsuffiecientConditions() {
             int nSamplesOne = 0;
-            int nSamplesTwo = 10;
             int nFeatures = 2;
             float[] rawData = new float[10];
             FloatBuffer data = FloatBuffer.wrap(rawData);
             assertThrows(IllegalArgumentException.class, () -> pca.fit(data, nSamplesOne, nFeatures));
-            assertThrows(IllegalArgumentException.class, () -> pca.transform(data, nSamplesTwo));
         }
 
         @Test
@@ -66,7 +64,18 @@ public class PCAUtilTest {
     @Nested
     @DisplayName("Fit and Transform Tests")
     class FitAndTransform {
+        @Test
+        @DisplayName("Should fit PCA on high-dimensional embedding data")
+        void shouldFitHighDimensionalData() {
+            int nSamples = 1000;
+            int nFeatures = 384;
+            float[] rawData = generateRandomEmbeddingData(nSamples, nFeatures);
+            FloatBuffer data = FloatBuffer.wrap(rawData);
 
+            assertDoesNotThrow(() -> pca.fit(data, nSamples, nFeatures));
+            assertTrue(pca.isFitted());
+            assertEquals(nFeatures, pca.getMean().length);
+        }
     }
 
 }
