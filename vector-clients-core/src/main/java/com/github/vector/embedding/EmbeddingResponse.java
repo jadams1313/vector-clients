@@ -3,17 +3,24 @@ package com.github.vector.embedding;
 import com.github.vector.data.Metadata;
 import com.github.vector.data.Text;
 
+import java.nio.FloatBuffer;
+import java.time.Instant;
+
 public class EmbeddingResponse {
     private final Text text;
     private final String requestId;
     private final Metadata metadata;
     private final String collection;
+    private Instant timeCreated;
+    private FloatBuffer embedding;
+    private EmbeddingResponse(final Text text, final String requestId, final Metadata metadata, final String collection, final float[][] embedding) {
+        this.text = text;
+        this.requestId = requestId;
+        this.metadata = metadata;
+        this.collection = collection;
+        this.timeCreated = Instant.now();
+        this.embedding = FloatBuffer.allocate(embedding.length);
 
-    private EmbeddingResponse(EmbeddingResponse.Builder builder) {
-        this.text = builder.text;
-        this.requestId = builder.requestId;
-        this.metadata = builder.metadata;
-        this.collection = builder.collection;
     }
 
     public Text getText() {
@@ -32,41 +39,7 @@ public class EmbeddingResponse {
         return collection;
     }
 
-    public static EmbeddingResponse.Builder builder() {
-        return new EmbeddingResponse.Builder();
-    }
-
-    public static class Builder {
-        private Text text;
-        private String requestId;
-        private Metadata metadata;
-        private String collection;
-
-        public EmbeddingResponse.Builder text(Text text) {
-            this.text = text;
-            return this;
-        }
-
-        public EmbeddingResponse.Builder requestId(String requestId) {
-            this.requestId = requestId;
-            return this;
-        }
-
-        public EmbeddingResponse.Builder metadata(Metadata metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public EmbeddingResponse.Builder collection(String collection) {
-            this.collection = collection;
-            return this;
-        }
-
-        public EmbeddingResponse build() {
-            if (text == null) {
-                throw new IllegalArgumentException("Text cannot be null");
-            }
-            return new EmbeddingResponse(this);
-        }
+    public FloatBuffer getEmbedding() {
+        return embedding;
     }
 }

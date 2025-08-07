@@ -1,5 +1,6 @@
 package com.github.vector.embedding;
 
+import com.github.vector.data.Embedding;
 import com.github.vector.data.Metadata;
 import com.github.vector.data.Text;
 
@@ -8,7 +9,6 @@ public class EmbeddingRequest {
     private final String requestId;
     private final Metadata metadata;
     private final String collection;
-
     private EmbeddingRequest(Builder builder) {
         this.text = builder.text;
         this.requestId = builder.requestId;
@@ -35,6 +35,7 @@ public class EmbeddingRequest {
     public static Builder builder() {
         return new Builder();
     }
+
 
     public static class Builder {
         private Text text;
