@@ -1,13 +1,10 @@
 package com.github.vector.connection;
 
+import java.sql.Connection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public interface StorageEngine {
-
-    //TO DO: conenction exceptions
-    //TO DO: Manage conneciton configuraiton. This is going to have to be decoupled with the clients themselves, so this may take a while.
-
 
     /**
      * Get a connection from the pool. Blocks if no connections available
@@ -46,7 +43,7 @@ public interface StorageEngine {
      * Initialize the connection pool with minimum connections
      * @throws  if initialization fails
      */
-    void initialize();
+    void initialize(int minConnections);
 
     /**
      * Shutdown the connection manager and close all connections
@@ -74,11 +71,6 @@ public interface StorageEngine {
      */
     void maintainPool();
 
-    /**
-     * Test all connections in the pool and remove invalid ones
-     * @return number of connections removed
-     */
-    int validateAllConnections();
 
     /**
      * Add additional connections to reach target pool size
@@ -94,14 +86,6 @@ public interface StorageEngine {
      */
     int shrinkPool(int targetSize);
 
-    /**
-     * Get configuration used by this connection manager
-     * @return current configuration
-     */
+    Config getConnectionConfiguration();
 
-    /**
-     * Update configuration at runtime (where supported)
-     * @param config new configuration
-     * @throws VectorConnectionException if update fails
-     */
 }
