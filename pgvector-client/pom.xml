@@ -6,7 +6,7 @@
 
     <groupId>com.github</groupId>
     <artifactId>pgvector-client</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -17,9 +17,8 @@
         <dependency>
             <groupId>com.github</groupId>
             <artifactId>vector-clients-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
-
     </dependencies>
 
 </project>

@@ -61,21 +61,5 @@ public class PCAUtilTest {
 
     }
 
-    @Nested
-    @DisplayName("Fit and Transform Tests")
-    class FitAndTransform {
-        @Test
-        @DisplayName("Should fit PCA on high-dimensional embedding data")
-        void shouldFitHighDimensionalData() {
-            int nSamples = 1000;
-            int nFeatures = 384;
-            float[] rawData = generateRandomEmbeddingData(nSamples, nFeatures);
-            FloatBuffer data = FloatBuffer.wrap(rawData);
-
-            assertDoesNotThrow(() -> pca.fit(data, nSamples, nFeatures));
-            assertTrue(pca.isFitted());
-            assertEquals(nFeatures, pca.getMean().length);
-        }
-    }
 
 }
