@@ -1,4 +1,7 @@
-package com.github.vector.connection;
+package com.github.vector;
+
+import com.github.vector.connection.ConnectionHealth;
+import com.github.vector.connection.ConnectionStatistics;
 
 import java.sql.Connection;
 import java.util.concurrent.CompletableFuture;

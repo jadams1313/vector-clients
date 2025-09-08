@@ -1,5 +1,7 @@
 package com.github.vector.connection;
 
+import com.github.vector.Config;
+import com.github.vector.StorageEngine;
 import com.github.vector.connection.Health.Result;
 import com.github.vector.connection.Health.Status;
 
@@ -159,7 +161,7 @@ public class ConnectionHealth {
             }
 
             try (PreparedStatement stmt = conn.prepareStatement(config.getValidationQuery())) {
-                stmt.setQueryTimeout((int) config.getTimeout().getSeconds());
+                stmt.setQueryTimeout((int) config.getConnectionTimeout().getSeconds());
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     long responseTime = System.currentTimeMillis() - startTime;
